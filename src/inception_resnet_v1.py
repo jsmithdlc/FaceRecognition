@@ -206,6 +206,13 @@ class InceptionModelV1(nn.Module):
         x = F.normalize(x,p=2,dim=1)
         return x
 
+def load_weights(model, path):
+    state_dict = torch.load(path)
+    print(state_dict)
+
+
+
+
 def test_block35():
     t_test = torch.randn(4,256,128,128)
     model = Block35()
@@ -247,5 +254,6 @@ def test_Inception():
 
 
 if __name__ == '__main__':
-    test_Inception()
+    model = InceptionModelV1()
+    load_weights()
 
