@@ -46,10 +46,10 @@ class Block35(nn.Module):
 
         self.relu = nn.ReLU()
 
-    def forward(self, x):
-        x = torch.cat((self.branch0(x),self.branch1(x),self.branch2(x)),dim = 1) 
+    def forward(self, x_in):
+        x = torch.cat((self.branch0(x_in),self.branch1(x_in),self.branch2(x_in)),dim = 1) 
         x = self.conv2d(x)
-        x = x + x * self.scale
+        x = x_in + x * self.scale
         x = self.relu(x)
         return x
 
@@ -71,10 +71,10 @@ class Block17(nn.Module):
 
         self.relu = nn.ReLU()
 
-    def forward(self,x):
-        x = torch.cat((self.branch0(x), self.branch1(x)),dim=1)
+    def forward(self,x_in):
+        x = torch.cat((self.branch0(x_in), self.branch1(x_in)),dim=1)
         x = self.conv2d(x)
-        x = x + x*self.scale
+        x = x_in + x*self.scale
         x = self.relu(x)
         return x
 
@@ -95,10 +95,10 @@ class Block8(nn.Module):
 
         self.relu = nn.ReLU()
 
-    def forward(self,x):
-        x = torch.cat((self.branch0(x),self.branch1(x)),dim=1)
+    def forward(self,x_in):
+        x = torch.cat((self.branch0(x_in),self.branch1(x_in)),dim=1)
         x = self.conv2d(x)
-        x = x + x*self.scale
+        x = x_in + x*self.scale
         if self.activate:
             x = self.relu(x)
         return x
@@ -211,6 +211,7 @@ def load_weights(model, path):
     del state_dict['logits.weight']
     del state_dict['logits.bias']
     model.load_state_dict(state_dict)
+    return model
     
 
 
