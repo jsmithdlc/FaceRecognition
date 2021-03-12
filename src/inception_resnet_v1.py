@@ -33,22 +33,22 @@ class Block35(nn.Module):
 
         self.scale = scale
 
-        self.branch_0 = Conv2dBlock(256, 32, 1, stride = 1)
+        self.branch0 = Conv2dBlock(256, 32, 1, stride = 1)
 
-        self.branch_1 = nn.Sequential(Conv2dBlock(256,32,1,stride = 1),
+        self.branch1 = nn.Sequential(Conv2dBlock(256,32,1,stride = 1),
                                       Conv2dBlock(32,32,3,stride = 1, padding = 1))
 
-        self.branch_2 = nn.Sequential(Conv2dBlock(256,32,1,stride = 1),
+        self.branch2 = nn.Sequential(Conv2dBlock(256,32,1,stride = 1),
                                       Conv2dBlock(32,32,3,stride = 1, padding = 1),
                                       Conv2dBlock(32,32,3,stride = 1, padding = 1))
 
-        self.conv = nn.Conv2d(96, 256, kernel_size = 1)
+        self.conv2d = nn.Conv2d(96, 256, kernel_size = 1)
 
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = torch.cat((self.branch_0(x),self.branch_1(x),self.branch_2(x)),dim = 1) 
-        x = self.conv(x)
+        x = torch.cat((self.branch0(x),self.branch1(x),self.branch2(x)),dim = 1) 
+        x = self.conv2d(x)
         x = x + x * self.scale
         x = self.relu(x)
         return x
@@ -61,19 +61,19 @@ class Block17(nn.Module):
 
         self.scale = scale
 
-        self.branch_0 = Conv2dBlock(896, 128, 1, stride = 1)
+        self.branch0 = Conv2dBlock(896, 128, 1, stride = 1)
 
-        self.branch_1 = nn.Sequential(Conv2dBlock(896,128,1,stride = 1),
+        self.branch1 = nn.Sequential(Conv2dBlock(896,128,1,stride = 1),
                                       Conv2dBlock(128,128,(1,7),stride = 1, padding = (0,3)),
                                       Conv2dBlock(128,128,(7,1),stride = 1, padding = (3,0)))
 
-        self.conv = nn.Conv2d(256, 896, 1)
+        self.conv2d = nn.Conv2d(256, 896, 1)
 
         self.relu = nn.ReLU()
 
     def forward(self,x):
-        x = torch.cat((self.branch_0(x), self.branch_1(x)),dim=1)
-        x = self.conv(x)
+        x = torch.cat((self.branch0(x), self.branch1(x)),dim=1)
+        x = self.conv2d(x)
         x = x + x*self.scale
         x = self.relu(x)
         return x
@@ -85,60 +85,60 @@ class Block8(nn.Module):
         self.activate = activate
         self.scale = scale
 
-        self.branch_0 = Conv2dBlock(1792, 192, 1, stride = 1)
+        self.branch0 = Conv2dBlock(1792, 192, 1, stride = 1)
 
-        self.branch_1 = nn.Sequential(Conv2dBlock(1792,192,1,stride = 1),
+        self.branch1 = nn.Sequential(Conv2dBlock(1792,192,1,stride = 1),
                                       Conv2dBlock(192,192,(1,3),stride = 1, padding = (0,1)),
                                       Conv2dBlock(192,192,(3,1),stride = 1, padding = (1,0)))
 
-        self.conv = nn.Conv2d(384, 1792, 1)
+        self.conv2d = nn.Conv2d(384, 1792, 1)
 
         self.relu = nn.ReLU()
 
     def forward(self,x):
-        x = torch.cat((self.branch_0(x),self.branch_1(x)),dim=1)
-        x = self.conv(x)
+        x = torch.cat((self.branch0(x),self.branch1(x)),dim=1)
+        x = self.conv2d(x)
         x = x + x*self.scale
         if self.activate:
             x = self.relu(x)
         return x
 
 
-class Mixed6a(nn.Module):
+class Mixed_6a(nn.Module):
     "Input C = 256"
     def __init__(self):
-        super(Mixed6a,self).__init__()
-        self.branch_0 = nn.Conv2d(256,384,3, stride=2)
+        super(Mixed_6a,self).__init__()
+        self.branch0 = Conv2dBlock(256,384,3, stride=2)
 
-        self.branch_1 = nn.Sequential(Conv2dBlock(256,192,1,stride = 1),
+        self.branch1 = nn.Sequential(Conv2dBlock(256,192,1,stride = 1),
                                          Conv2dBlock(192,192,3,stride = 1, padding = 1),
                                          Conv2dBlock(192,256,3,stride = 2))
 
-        self.branch_2 = nn.MaxPool2d(3, stride = 2)
+        self.branch2 = nn.MaxPool2d(3, stride = 2)
 
 
     def forward(self,x):
-        x = torch.cat((self.branch_0(x),self.branch_1(x),self.branch_2(x)),dim=1)
+        x = torch.cat((self.branch0(x),self.branch1(x),self.branch2(x)),dim=1)
         return x
 
-class Mixed7a(nn.Module):
+class Mixed_7a(nn.Module):
     "Input C = 896"
     def __init__(self):
-        super(Mixed7a,self).__init__()
-        self.branch_0 = nn.Sequential(Conv2dBlock(896,256,1,stride = 1),
+        super(Mixed_7a,self).__init__()
+        self.branch0 = nn.Sequential(Conv2dBlock(896,256,1,stride = 1),
                                       Conv2dBlock(256,384,3,stride = 2))
 
-        self.branch_1 = nn.Sequential(Conv2dBlock(896,256,1,stride = 1),
+        self.branch1 = nn.Sequential(Conv2dBlock(896,256,1,stride = 1),
                                       Conv2dBlock(256,256,3,stride = 2))
 
-        self.branch_2 = nn.Sequential(Conv2dBlock(896,256,1,stride = 1),
+        self.branch2 = nn.Sequential(Conv2dBlock(896,256,1,stride = 1),
                                       Conv2dBlock(256,256,3,stride = 1,padding=1),
                                       Conv2dBlock(256,256,3,stride = 2))
 
-        self.branch_3 = nn.MaxPool2d(3, stride = 2)
+        self.branch3 = nn.MaxPool2d(3, stride = 2)
 
     def forward(self,x):
-        x = torch.cat((self.branch_0(x),self.branch_1(x),self.branch_2(x),self.branch_3(x)),dim=1)
+        x = torch.cat((self.branch0(x),self.branch1(x),self.branch2(x),self.branch3(x)),dim=1)
         return x
 
 
@@ -156,13 +156,13 @@ class InceptionModelV1(nn.Module):
         self.conv2d_3b = Conv2dBlock(64,80,1,stride=1)
         self.conv2d_4a = Conv2dBlock(80,192,3,stride=1)
         self.conv2d_4b = Conv2dBlock(192,256,3,stride=2)
-        self.mixed_5a = nn.Sequential(Block35(scale=0.17),
+        self.repeat_1 = nn.Sequential(Block35(scale=0.17),
                                       Block35(scale=0.17),
                                       Block35(scale=0.17),
                                       Block35(scale=0.17),
                                       Block35(scale=0.17))
-        self.mixed_6a = Mixed6a()
-        self.mixed_6b = nn.Sequential(Block17(scale=0.10),
+        self.mixed_6a = Mixed_6a()
+        self.repeat_2 = nn.Sequential(Block17(scale=0.10),
                                       Block17(scale=0.10),
                                       Block17(scale=0.10),
                                       Block17(scale=0.10),
@@ -172,17 +172,17 @@ class InceptionModelV1(nn.Module):
                                       Block17(scale=0.10),
                                       Block17(scale=0.10),
                                       Block17(scale=0.10))
-        self.mixed_7a = Mixed7a()
-        self.mixed_8a = nn.Sequential(Block8(scale=0.8),
+        self.mixed_7a = Mixed_7a()
+        self.repeat_3 = nn.Sequential(Block8(scale=0.8),
                                       Block8(scale=0.8),
                                       Block8(scale=0.8),
                                       Block8(scale=0.8),
                                       Block8(scale=0.8))
-        self.mixed_8b = Block8(activate=False)
+        self.block8 = Block8(activate=False)
 
         self.avgpool_1a = nn.AdaptiveAvgPool2d(1)
         self.dropout = nn.Dropout(p=0.8)
-        self.bottleneck = nn.Linear(1792,512,bias=False)
+        self.last_linear = nn.Linear(1792,512,bias=False)
         self.last_bn = nn.BatchNorm1d(512,eps=0.001, momentum=0.1)
 
     def forward(self, x):
@@ -193,23 +193,25 @@ class InceptionModelV1(nn.Module):
         x = self.conv2d_3b(x)
         x = self.conv2d_4a(x)
         x = self.conv2d_4b(x)
-        x = self.mixed_5a(x)
+        x = self.repeat_1(x)
         x = self.mixed_6a(x)
-        x = self.mixed_6b(x)
+        x = self.repeat_2(x)
         x = self.mixed_7a(x)
-        x = self.mixed_8a(x)
-        x = self.mixed_8b(x)
+        x = self.repeat_3(x)
+        x = self.block8(x)
         x = self.avgpool_1a(x)
         x = self.dropout(x)
-        x = self.bottleneck(x.view(x.shape[0],-1))
+        x = self.last_linear(x.view(x.shape[0],-1))
         x = self.last_bn(x)
         x = F.normalize(x,p=2,dim=1)
         return x
 
 def load_weights(model, path):
     state_dict = torch.load(path)
-    print(state_dict)
-
+    del state_dict['logits.weight']
+    del state_dict['logits.bias']
+    model.load_state_dict(state_dict)
+    
 
 
 
@@ -255,5 +257,5 @@ def test_Inception():
 
 if __name__ == '__main__':
     model = InceptionModelV1()
-    load_weights()
+    load_weights(model, "/home/javier/Ramblings/FaceRecognition/models/20180402-114759-vggface2.pt")
 
