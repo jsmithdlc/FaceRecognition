@@ -1,22 +1,22 @@
 from lib.inception_resnet_v1 import InceptionModelV1, load_weights
+from lib.yolov3 import Darknet
 from PIL import Image
 from torchvision import transforms
 import numpy as np
+import pandas as pd
 
-def load_image(img_path):
-	im = Image.open(img_path)
-	im = im.resize((160,160))
-	im_t = transforms.ToTensor()(im)
-	return im_t.unsqueeze(0)
+#def compare_imgs(name, img):
+
+#def detect_people(img):
+
+
 
 if __name__ == '__main__':
-	model = InceptionModelV1()
-	model = load_weights(model,"/home/javier/Ramblings/FaceRecognition/models/20180402-114759-vggface2.pt")
-	model = model.eval()
-	img1 = load_image("/home/javier/Ramblings/FaceRecognition/database/javier1.jpg")
-	img2 = load_image("/home/javier/Ramblings/FaceRecognition/database/lore1.jpg")
-	e1 = model(img1).detach().numpy()
-	e2 = model(img2).detach().numpy()
-	print(e1.shape)
-	print(np.linalg.norm(e1-e2))
+    embeddings_model = InceptionModelV1()
+    embeddings_model = load_weights(embeddings_model,"../models/20180402-114759-vggface2.pt")
+    embeddings_model = model.eval()
+    anchor_embeddings = pd.read_csv("../database/embeddings/embeddings.csv",index_col=0)
+
+    yolo_model = Darknet("../models/yolo_config.cfg")
+
 

@@ -46,6 +46,7 @@ class Database(Dataset):
 def main(args):
     model = InceptionModelV1()
     model = load_weights(model,"../../models/20180402-114759-vggface2.pt")
+    model = model.eval()
     model.to(device)
     dataset = Database(args.imgs_path)
     img_names = dataset.imgs_names
@@ -59,6 +60,7 @@ def main(args):
     embeddings = np.concatenate(embeddings,axis=0)
     print("Storing images to disk")
     df = pd.DataFrame(embeddings, index = img_names)
+    df.index.name = "person_name"
     df.to_csv(r'../../database/embeddings/embeddings.csv')
 
 
