@@ -206,57 +206,10 @@ class InceptionModelV1(nn.Module):
         x = F.normalize(x,p=2,dim=1)
         return x
 
-def load_weights(model, path):
-    state_dict = torch.load(path)
-    del state_dict['logits.weight']
-    del state_dict['logits.bias']
-    model.load_state_dict(state_dict)
-    return model
-    
-
-
-
-def test_block35():
-    t_test = torch.randn(4,256,128,128)
-    model = Block35()
-    output = model(t_test)
-    assert output.shape == (4,256,128,128)
-
-def test_block17():
-    t_test = torch.randn(4,896,128,128)
-    model = Block17()
-    output = model(t_test)
-    assert output.shape == (4,896,128,128)
-
-def test_block8():
-    t_test = torch.randn(4,1792,32,32)
-    model = Block8()
-    output = model(t_test)
-    assert output.shape == (4,1792,32,32)
-
-
-def test_mixed6a():
-    t_test = torch.randn(4,256,32,32)
-    model = Mixed6a()
-    output = model(t_test)
-    assert output.shape == (4,896,15,15)
-
-def test_mixed7a():
-    t_test = torch.randn(4,896,32,32)
-    model = Mixed7a()
-    output = model(t_test)
-    assert output.shape == (4,1792,15,15)
-
-def test_Inception():
-    t_test = torch.randn(2,3,149,149)
-    model = InceptionModelV1()
-    output = model(t_test)
-    assert output.shape == (2,512)
-    print(output[0,:])
-
-
-
-if __name__ == '__main__':
-    model = InceptionModelV1()
-    load_weights(model, "/home/javier/Ramblings/FaceRecognition/models/20180402-114759-vggface2.pt")
+    def load_weights(self, path):
+        state_dict = torch.load(path)
+        del state_dict['logits.weight']
+        del state_dict['logits.bias']
+        self.load_state_dict(state_dict)
+        
 
