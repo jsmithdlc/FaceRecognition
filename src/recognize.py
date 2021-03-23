@@ -35,24 +35,30 @@ def detect_people(img_path):
 
     detections = yolo_model(pil2torch(net_img).unsqueeze(dim=0))
     detections = non_max_suppression(detections)[0].detach().numpy()
-    return detections, (x_scale, y_scale)
-
-"""
-def post_process(image, scales, detections):
-    x_scale, y_scale = scales
-    for box in detections:
-        bbox = box.detach().numpy()
-"""
+    rescaled_detections = []
+    for bbox in detections:
+        bbox[0], bbox[2] = bbox[0] * x_scale, bbox[2] * x_scale
+        bbox[1], bbox[3] = bbox[1] * y_scale, bbox[3] * y_scale
+    return detections
 
 
+def post_process(detections, im_size, bbox_scale):
+    width, height= im_size
+    bbox_heights = detections[:,3] - detections[:,1]
+    bbox_widths = detections[:,2] - detections[:,0]
+    y_delta = bbox_heights * (bbox_scale-1)/2
+    x_delta = bbox_widths * (bbox_scale-1)/2
+    detections[:,0] = np.clip(detections[:,0] - x_delta, 0, width)
+    detections[:,1] = np.clip(detections[:,1] - y_delta, 0, height)
+    detections[:,2] = np.clip(detections[:,2] + x_delta, 0, width)
+    detections[:,3] = np.clip(detections[:,3] + y_delta, 0, height)
+    return detections
 
-
-def show_detections(img, scale, detections):
-    x_scale, y_scale = scale
+def show_detections(img, detections):
     draw = ImageDraw.Draw(img)
     for bbox in detections:
-        x1, x2 = bbox[0] * x_scale, bbox[2] * x_scale
-        y1, y2 = bbox[1] * y_scale, bbox[3] * y_scale
+        x1, x2 = bbox[0], bbox[2]
+        y1, y2 = bbox[1], bbox[3]
         draw.rectangle([x1,y1,x2,y2], width = 4)
     img.save("../out_imgs/detection", "JPEG")
 
@@ -62,18 +68,11 @@ def show_detections(img, scale, detections):
 
 if __name__ == '__main__':
     img_path = '/home/javier/Ramblings/FaceRecognition/sample_imgs/cabros.jpg'
-    detections, scale = detect_people(img_path)
-    show_detections(Image.open(img_path), scale, detections)
-    """
-    bbox = out_det[0].detach().numpy()[0]
-    bbox[0], bbox[2] = bbox[0] * x_scale, bbox[2] * x_scale
-    bbox[1], bbox[3] = bbox[1] * y_scale, bbox[3] * y_scale
-
-    draw = ImageDraw.Draw(original_img)
-    draw.rectangle(bbox[:4], width = 4)
-    original_img.save("../out_imgs/lore_detected","JPEG")
-    """
-
+    img = Image.open(img_path)
+    detections = detect_people(img_path)
+    post_process(detections, img.size, 1.3)
+    show_detections(img, detections)
+    
 
 
 
