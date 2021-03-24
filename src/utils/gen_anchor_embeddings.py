@@ -13,6 +13,7 @@ from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 import torch
 import tqdm
+import numpy as np
 
 # CUDA for PyTorch
 use_cuda = torch.cuda.is_available()
