@@ -9,7 +9,8 @@ from torch.autograd import Variable
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
+from PIL import Image, ImageOps
+from torchvision import transforms
 
 def to_cpu(tensor):
     return tensor.detach().cpu()
@@ -31,6 +32,17 @@ def weights_init_normal(m):
     elif classname.find("BatchNorm2d") != -1:
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
+
+def pad_img(img, out_size):
+    size = img.size 
+    scale = out_size[0]/size[0] if size[0] >= size[1] else out_size[1]/size[1]
+    new_size = (int(size[0] * scale), int(size[1] * scale))
+    scaled_img = img.resize(new_size, Image.ANTIALIAS)
+    delta_w = out_size[0] - new_size[0]
+    delta_h = out_size[1] - new_size[1]
+    pad = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
+    new_img = ImageOps.expand(scaled_img, pad)
+    return new_img, (scale, pad)
 
 
 def rescale_boxes(boxes, current_dim, original_shape):

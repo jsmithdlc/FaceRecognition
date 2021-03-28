@@ -3,9 +3,10 @@ import os
 import os.path as osp
 sys.path.insert(0, "/".join(osp.dirname(os.path.abspath(__file__)).split("/")[:-1]))
 
+from utils import pad_img
 import numpy as np
 import pandas as pd
-from lib.inception_resnet_v1 import InceptionModelV1, load_weights
+from lib.embedding.inception_resnet_v1 import InceptionModelV1
 from PIL import Image
 import glob
 import argparse
@@ -36,17 +37,17 @@ class Database(Dataset):
         'Generates one sample of data'
         # Select sample
         img = Image.open(self.imgs_list[index])
-        x = self.transformer(self.resize(img))
+        x = self.transformer(self.preprocess(img))
         return x
 
-    def resize(self, img):
-        img_resized = img.resize((160,160))
-        return img_resized
+    def preprocess(self, img):
+        img_padded,_ = pad_img(img, (160,160))
+        return img_padded
 
 
 def main(args):
     model = InceptionModelV1()
-    model = load_weights(model,"../../models/20180402-114759-vggface2.pt")
+    model.load_weights("../../models/20180402-114759-vggface2.pt")
     model = model.eval()
     model.to(device)
     dataset = Database(args.imgs_path)

@@ -11,7 +11,7 @@ import sys
 import os.path as osp
 import os
 
-sys.path.insert(0, "/".join(osp.dirname(os.path.abspath(__file__)).split("/")[:-1]))
+sys.path.insert(0, "/".join(osp.dirname(os.path.abspath(__file__)).split("/")[:-2]))
 
 from utils.parse_config import *
 from utils.utils import build_targets, to_cpu, non_max_suppression
